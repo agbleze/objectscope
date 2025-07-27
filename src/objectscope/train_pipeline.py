@@ -1,4 +1,4 @@
-from trainer import TrainSession
+from objectscope.trainer import TrainSession
 from objectscope.evaluator import Evaluator
 from objectscope import logger
 from argparse import ArgumentParser
