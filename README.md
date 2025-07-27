@@ -3,7 +3,10 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/agbleze/objectscope)
 ![GitHub Release](https://img.shields.io/github/v/release/agbleze/objectscope)
 ![GitHub License](https://img.shields.io/github/license/agbleze/objectscope)
-Object detection
+
+ObjectScope package provides a simplier approach to model training and evaluation by building the works of Detectron2. The focus is further abstract away the grunt work while leaving room to directly interact with Detectron2.
+
+Several utilities needed to aid the model development are provided.
 
 ## Installation
 
