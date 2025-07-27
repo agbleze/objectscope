@@ -31,10 +31,11 @@ class Evaluator(object):
         self.dataset_nm = DatasetCatalog.get(test_data_name)
         self.metadata = MetadataCatalog.get(test_data_name)
     
-    def get_model_names(self):
+    def get_model_names(self, cfg=None):
         self.model_names = []
-        max_iter = self.cfg.SOLVER.MAX_ITER
-        chp = self.cfg.SOLVER.CHECKPOINT_PERIOD
+        cfg = cfg if cfg else self.cfg
+        max_iter = cfg.SOLVER.MAX_ITER
+        chp = cfg.SOLVER.CHECKPOINT_PERIOD
         for i in range(1, max_iter // chp):
             self.model_names.append(f'model_{str(i * chp - 1).zfill(7)}.pth')
         self.model_names.append('model_final.pth')
@@ -51,8 +52,7 @@ class Evaluator(object):
                 model_names = self.get_model_names(cfg)
             else:
                 model_names = self.model_names
-                
-        
+                        
         for model_name in model_names:
             cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, model_name)
             cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = roi_heads_score_threshold if roi_heads_score_threshold else self.roi_heads_score_threshold
@@ -62,8 +62,7 @@ class Evaluator(object):
         self.eval_df = pd.DataFrame.from_dict(model_eval_results, orient='index')
         self.eval_df.index.name = 'model_name'                
         return self.eval_df
-    
-    
+        
     def get_best_model(eval_df, 
                         metric='AP50'
                         ):
@@ -82,8 +81,7 @@ class Evaluator(object):
         return {"best_model_name": best_model_name, 
                 f"best_model_{metric}_score": best_model_score,
                 }
-        
-        
+                
     def plot_evaluation_results(df, metric='AP50',
                                 labels={"AP50": "Average Precision at IoU=0.5", "model_name": "Model Name"}
                                 ):
@@ -107,8 +105,7 @@ class Evaluator(object):
         
         threshold_results_df = pd.DataFrame.from_dict(threshold_results, orient='index')
         threshold_results_df.index.name = 'threshold'
-        return threshold_results_df
-   
+        return threshold_results_df  
         
     def get_best_threshold(threshold_df: pd.DataFrame,
                         metric="AP50"

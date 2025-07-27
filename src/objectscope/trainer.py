@@ -99,18 +99,24 @@ class TrainSession(object):
 
     def get_trainer(self, cfg=None):
         self.trainer = DefaultTrainer(cfg if cfg else self.cfg)
-        return self.trainer.resume_or_load(True)
+        self.trainer.resume_or_load(True)
     
     def create_trainer(self):
         self.register_dataset()
         cfg, output_cfg_path = self.create_config()
-        self.trainer = self.get_trainer(cfg=cfg)
+        self.get_trainer(cfg=cfg)
         return self.trainer
 
-    def __call__(self):
-        self.trainer = self.create_trainer()
+    def run(self):
+        logger.info("Creating trainer...")
+        self.create_trainer()
+        logger.info("Trainer created successfully.")
         if not self.start_run:
+            logger.info("Training run not started, returning trainer instance.")
             return self.trainer
         else:
+            logger.info("Starting training run...")
             self.trainer.train()
+            logger.info("Training run completed successfully.")
+            return self.trainer
         

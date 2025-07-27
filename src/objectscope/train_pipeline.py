@@ -86,8 +86,9 @@ def main():
                             checkpoint_period=args.checkpoint_period,
                             start_run=args.start_run
                         )
+    trainer.run()
     evaluator = Evaluator(cfg=trainer.cfg,
-                            test_data_name=args.test_data_name,
+                            test_data_name=trainer.test_data_name,
                             output_dir=args.output_dir,
                             dataset_nm=trainer.test_data_name,
                             metadata=trainer.test_metadata,
