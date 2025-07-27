@@ -40,27 +40,28 @@ class Evaluator(object):
         self.model_names.append('model_final.pth')
         return self.model_names
     
-    def evaluate_models(self, cfg, model_names=None, 
+    def evaluate_models(self, cfg=None, model_names=None, 
                         roi_heads_score_threshold=None,
                         ) -> pd.DataFrame:
     
         model_eval_results = {}
+        cfg = cfg if cfg else self.cfg
         if not model_names:
             if not hasattr(self, "model_names"):
                 model_names = self.get_model_names(cfg)
             else:
                 model_names = self.model_names
                 
-        cfg = cfg if cfg else self.cfg
+        
         for model_name in model_names:
             cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, model_name)
             cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = roi_heads_score_threshold if roi_heads_score_threshold else self.roi_heads_score_threshold
             predictor = DefaultPredictor(self.cfg)
             x = DefaultTrainer.test(cfg, predictor.model, evaluators=[self.evaluator])
             model_eval_results[model_name] = x['bbox']
-        eval_df = pd.DataFrame.from_dict(model_eval_results, orient='index')
-        eval_df.index.name = 'model_name'                
-        return eval_df
+        self.eval_df = pd.DataFrame.from_dict(model_eval_results, orient='index')
+        self.eval_df.index.name = 'model_name'                
+        return self.eval_df
     
     
     def get_best_model(eval_df, 
