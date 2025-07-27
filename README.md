@@ -1,5 +1,8 @@
 # objectscope
-
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/agbleze/objectscope/.github%2Fworkflows%2Fci.yml)
+![GitHub Tag](https://img.shields.io/github/v/tag/agbleze/objectscope)
+![GitHub Release](https://img.shields.io/github/v/release/agbleze/objectscope)
+![GitHub License](https://img.shields.io/github/license/agbleze/objectscope)
 Object detection
 
 ## Installation
