@@ -6,7 +6,7 @@
 
 ObjectScope package provides a simplier approach to model training and evaluation by building the works of Detectron2. The focus is further abstract away the grunt work while leaving room to directly interact with Detectron2.
 
-Several utilities needed to aid the model development are provided.
+Several utilities needed to aid the model development are provided. This includes extensive model evaluation and selection,
 
 ## Installation
 
