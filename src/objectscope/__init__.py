@@ -1,6 +1,7 @@
 # read version from installed package
 from importlib.metadata import version
 import logging
+from decouple import config
 
 package_name = __name__
 __version__ = version(package_name)
