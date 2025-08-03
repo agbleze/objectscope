@@ -5,6 +5,9 @@ from detectron2.config import get_cfg
 from detectron2 import model_zoo
 from detectron2.engine import DefaultTrainer
 from objectscope import logger
+import tensorboard
+
+
 
 class TrainSession(object):
     def __init__(self,train_img_dir, train_coco_json_file, 
