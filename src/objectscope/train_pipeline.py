@@ -4,6 +4,7 @@ from objectscope import logger
 from argparse import ArgumentParser
 import os
 import pandas as pd
+from utils import launch_tensorboard
 
 def parse_args():
     parser = ArgumentParser(description="Setup model training and evaluation parameters")
@@ -63,6 +64,14 @@ def parse_args():
     parser.add_argument("--roi_heads_score_threshold", type=float, default=0.5,
                         help="Score threshold for ROI heads during evaluation"
                         )
+    parser.add_argument("--tensorboard_logdir", type=str, default="runs",
+                        help="Directory for TensorBoard logs"
+                        )
+    parser.add_argument("--lauch_tensorboard", action="store_true",
+                        help="Whether to launch TensorBoard after training. Launches when flag is used"
+                        )
+    parser.add_argument("--tensorboard_port_num", default="default")
+    
     return parser.parse_args()
 
 def main():
@@ -87,6 +96,9 @@ def main():
                             start_run=args.start_run
                         )
     trainer.run()
+    if args.lauch_tensorboard:
+        launch_tensorboard(logdir=args.tensorboard_logdir, port_num=args.tensorboard_port_num)
+        logger.info(f"TensorBoard launched at port {args.tensorboard_port_num}")
     evaluator = Evaluator(cfg=trainer.cfg,
                             test_data_name=trainer.test_data_name,
                             output_dir=args.output_dir,
