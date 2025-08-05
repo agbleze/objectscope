@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.DEBUG,
 logger.info(f"{package_name} version {__version__} initialized.")
 
 
-train_img_dir = config("TRAIN_IMG_DIR", default=None, cast=str)
+TRAIN_IMG_DIR = config("TRAIN_IMG_DIR", default=None, cast=str)
 test_img_dir = config("TEST_IMG_DIR", default=None, cast=str)
 train_coco_json_file = config("TRAIN_COCO_JSON_FILE", default=None, cast=str)
 test_coco_json_file = config("TEST_COCO_JSON_FILE", default=None, cast=str)

@@ -5,6 +5,8 @@ from argparse import ArgumentParser
 import os
 import pandas as pd
 from utils import launch_tensorboard
+import subprocess
+
 
 def parse_args():
     parser = ArgumentParser(description="Setup model training and evaluation parameters")
@@ -71,6 +73,9 @@ def parse_args():
                         help="Whether to launch TensorBoard after training. Launches when flag is used"
                         )
     parser.add_argument("--tensorboard_port_num", default="default")
+    parser.add_argument("--optimize_model", action="store_true",
+                        help="Whether to optimize the model after training"
+                        )
     
     return parser.parse_args()
 
