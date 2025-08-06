@@ -115,6 +115,21 @@ def main():
     eval_df = evaluator.evaluate_models(cfg=trainer.cfg)
     eval_df.to_csv(os.path.join(args.output_dir, 'evaluation_results.csv'))
     
+    if args.optimize_model:
+        logger.info("Optimizing model...")
+        cmd = [olive auto-opt \
+                --model_name_or_path meta-llama/Llama-3.2-1B-Instruct \
+                --trust_remote_code \
+                --output_path models/llama/ao \
+                --device cpu \
+                --provider CPUExecutionProvider \
+                --use_ort_genai \
+                --precision int4 \
+                --log_level 1
+                ]
+        subprocess.run(cmd, check=True)
+        logger.info("Model optimization completed.")
+    
 if __name__ == "__main__":
     main()
     logger.info("Training and evaluation completed successfully.")    
