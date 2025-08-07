@@ -117,7 +117,7 @@ def main():
     
     if args.optimize_model:
         logger.info("Optimizing model...")
-        cmd = [olive auto-opt \
+        cmd = ["olive", auto-"opt", \
                 --model_name_or_path meta-llama/Llama-3.2-1B-Instruct \
                 --trust_remote_code \
                 --output_path models/llama/ao \
