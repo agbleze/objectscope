@@ -117,15 +117,15 @@ def main():
     
     if args.optimize_model:
         logger.info("Optimizing model...")
-        cmd = ["olive", auto-"opt", \
-                --model_name_or_path meta-llama/Llama-3.2-1B-Instruct \
-                --trust_remote_code \
-                --output_path models/llama/ao \
-                --device cpu \
-                --provider CPUExecutionProvider \
-                --use_ort_genai \
-                --precision int4 \
-                --log_level 1
+        cmd = ["olive", "auto-opt",
+                "--model_name_or_path", "meta-llama/Llama-3.2-1B-Instruct",
+                #--trust_remote_code
+                "--output_path", args.output_dir,
+                "--device", "cpu",
+                "--provider", "CPUExecutionProvider",
+                "--use_ort_genai",
+                "--precision int4",
+                "--log_level", 1
                 ]
         subprocess.run(cmd, check=True)
         logger.info("Model optimization completed.")
