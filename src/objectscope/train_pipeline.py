@@ -6,6 +6,7 @@ import os
 import pandas as pd
 from utils import launch_tensorboard
 import subprocess
+from decouple import config
 
 
 def parse_args():
