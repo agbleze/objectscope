@@ -4,10 +4,13 @@ from objectscope import logger
 from argparse import ArgumentParser
 import os
 import pandas as pd
-from utils import launch_tensorboard
+from utils import launch_tensorboard, run_optimize_model
 import subprocess
 from decouple import config
-
+from onnx import load
+from onnxoptimizer import optimize
+from objectscope.model_export_utils import OnnxModelExporter
+import onnx
 
 def parse_args():
     parser = ArgumentParser(description="Setup model training and evaluation parameters")
@@ -61,9 +64,9 @@ def parse_args():
     parser.add_argument("--checkpoint_period", type=int, required=True,
                         help="Period for saving checkpoints"
                         )
-    parser.add_argument("--start_run", action='store_true',
-                        help="Whether to start the training run on initialization"
-                        )
+    # parser.add_argument("--start_run", action='store_true',
+    #                     help="Whether to start the training run on initialization"
+    #                     )
     parser.add_argument("--roi_heads_score_threshold", type=float, default=0.5,
                         help="Score threshold for ROI heads during evaluation"
                         )
@@ -82,55 +85,71 @@ def parse_args():
 
 def main():
     args = parse_args()
-    trainer = TrainSession(train_img_dir=args.train_img_dir,
-                            train_coco_json_file=args.train_coco_json_file,
-                            test_img_dir=args.test_img_dir,
-                            test_coco_json_file=args.test_coco_json_file,
-                            config_file_url=args.config_file_url,
-                            num_classes=args.num_classes,
-                            train_data_name=args.train_data_name,
-                            test_data_name=args.test_data_name,
-                            train_metadata=args.train_metadata,
-                            test_metadata=args.test_metadata,
-                            output_dir=args.output_dir,
-                            device=args.device,
-                            num_workers=args.num_workers,
-                            imgs_per_batch=args.imgs_per_batch,
-                            base_lr=args.base_lr,
-                            max_iter=args.max_iter,
-                            checkpoint_period=args.checkpoint_period,
-                            start_run=args.start_run
+    
+    trainer = TrainSession(train_img_dir=args.train_img_dir if args.train_img_dir else config("TRAIN_IMG_DIR"),
+                            train_coco_json_file=args.train_coco_json_file if args.train_coco_json_file else config("TRAIN_COCO_JSON_FILE"),
+                            test_img_dir=args.test_img_dir if args.test_img_dir else config("TEST_IMG_DIR"),
+                            test_coco_json_file=args.test_coco_json_file if args.test_coco_json_file else config("TEST_COCO_JSON_FILE"),
+                            config_file_url=args.config_file_url if args.config_file_url else config("CONFIG_FILE_URL"),
+                            num_classes=args.num_classes if args.num_classes else config("NUM_CLASSES"),
+                            train_data_name=args.train_data_name if args.train_data_name else config("TRAIN_DATA_NAME"),
+                            test_data_name=args.test_data_name if args.test_data_name else config("TEST_DATA_NAME"),
+                            train_metadata=args.train_metadata if args.train_metadata else config("TRAIN_METADATA", cast=dict),
+                            test_metadata=args.test_metadata if args.test_metadata else config("TEST_METADATA", cast=dict),
+                            output_dir=args.output_dir if args.output_dir else config("OUTPUT_DIR"),
+                            device=args.device if args.device else config("DEVICE"),
+                            num_workers=args.num_workers if args.num_workers else config("NUM_WORKERS", cast=int),
+                            imgs_per_batch=args.imgs_per_batch if args.imgs_per_batch else config("IMGS_PER_BATCH", cast=int),
+                            base_lr=args.base_lr if args.base_lr else config("BASE_LR", cast=float),
+                            max_iter=args.max_iter if args.max_iter else config("MAX_ITER", cast=int),
+                            checkpoint_period=args.checkpoint_period if args.checkpoint_period else config("CHECKPOINT_PERIOD", cast=int),
+                            #start_run=args.start_run
                         )
     trainer.run()
-    if args.lauch_tensorboard:
-        launch_tensorboard(logdir=args.tensorboard_logdir, port_num=args.tensorboard_port_num)
-        logger.info(f"TensorBoard launched at port {args.tensorboard_port_num}")
+    
+    # to ensure tensorboard is launched whenever and wherever passed 
+    if not args.lauch_tensorboard:
+        try:
+            lauch_tensorboard = config("LAUCH_TENSORBOARD")
+        except:
+            lauch_tensorboard = args.lauch_tensorboard
+    else:
+        lauch_tensorboard = args.lauch_tensorboard
+    if lauch_tensorboard:
+        tensorboard_port_num = args.tensorboard_port_num if args.tensorboard_port_num else config("TENSORBOARD_PORT_NUM", default="default")
+        launch_tensorboard(logdir=args.tensorboard_logdir, 
+                           port_num=tensorboard_port_num
+                           )
+        logger.info(f"TensorBoard launched at port {tensorboard_port_num}")
     evaluator = Evaluator(cfg=trainer.cfg,
                             test_data_name=trainer.test_data_name,
-                            output_dir=args.output_dir,
+                            output_dir=args.output_dir if args.output_dir else config("output_dir"),
                             dataset_nm=trainer.test_data_name,
                             metadata=trainer.test_metadata,
-                            roi_heads_score_threshold=args.roi_heads_score_threshold,
+                            roi_heads_score_threshold=args.roi_heads_score_threshold if args.roi_heads_score_threshold else config("ROI_HEADS_SCORE_THRESHOLD"),
                                 
                             )
     eval_df = evaluator.evaluate_models(cfg=trainer.cfg)
     eval_df.to_csv(os.path.join(args.output_dir, 'evaluation_results.csv'))
+    best_model_res = evaluator.get_best_model(eval_df)
     
-    if args.optimize_model:
-        logger.info("Optimizing model...")
-        cmd = ["olive", "auto-opt",
-                "--model_name_or_path", "meta-llama/Llama-3.2-1B-Instruct",
-                #--trust_remote_code
-                "--output_path", args.output_dir,
-                "--device", "cpu",
-                "--provider", "CPUExecutionProvider",
-                "--use_ort_genai",
-                "--precision int4",
-                "--log_level", 1
-                ]
-        subprocess.run(cmd, check=True)
-        logger.info("Model optimization completed.")
-    
+    if not args.optimize_model:
+        try:
+            optimize_model = config("OPTIMIZE_MODEL")
+        except:
+            optimize_model = args.optimize_model
+    else:
+        optimize_model = args.optimize_model
+    if optimize_model:
+        onnx_exporter = OnnxModelExporter(cfg_path=cfg_path,
+                                        model_path=finalmodel_path,
+                                        registered_dataset_name=name_ds_test
+                                        )
+        onnx_exporter.export_to_onnx(save_onnx_as="onnx_sample_model.onnx")
+        onnx_model = onnx.load("onnx_sample_model.onnx")
+
+        
+        optimize(onnx_model)
 if __name__ == "__main__":
     main()
     logger.info("Training and evaluation completed successfully.")    
