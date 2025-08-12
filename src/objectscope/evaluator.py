@@ -11,6 +11,7 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog, DatasetCatalog
 from objectscope import logger
 from glob import glob
+from typing import Union, List
 
 class Evaluator(object):
     def __init__(self, cfg, test_data_name, 
@@ -87,9 +88,15 @@ class Evaluator(object):
                                     }
         return self.best_model_results
                 
-    def plot_evaluation_results(df, metric='AP50',
+    def plot_evaluation_results(self, df: Union[pd.DataFrame, None]=None, metric='AP50',
                                 labels={"AP50": "Average Precision at IoU=0.5", "model_name": "Model Name"}
                                 ):
+        if not df:
+            if hasattr(self, "eval_df"):
+                df = self.eval_df
+            else:
+                logger.info(f"df not passed and eval_df not created so model evaluation will be done. This may take several minutes ...")
+                df = self.evaluate_models()
         fig = px.line(df, x=df.index, y=metric, color=df.index, text=metric,
                     template="plotly_dark",
                     title="Model evaluation results",
@@ -98,9 +105,12 @@ class Evaluator(object):
         fig.update_traces(textposition="bottom right")
         fig.show()    
     
-    def evaluate_confidence_thresholds(self, cfg, 
+    def evaluate_confidence_thresholds(self,  
                                        thresholds: list,
+                                       cfg=None,
                                         ) -> pd.DataFrame:
+        if not cfg:
+            cfg = self.cfg
         threshold_results = {}
         for threshold in thresholds:
             cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = threshold
@@ -112,9 +122,18 @@ class Evaluator(object):
         threshold_results_df.index.name = 'threshold'
         return threshold_results_df  
         
-    def get_best_threshold(threshold_df: pd.DataFrame,
-                        metric="AP50"
-                        ) -> dict:
+    def get_best_threshold(self, threshold_df: Union[pd.DataFrame,None]=None,
+                            metric="AP50", 
+                            thresholds: Union[List,None] = None,
+                            ) -> dict:
+        if not threshold_df and not thresholds:
+            raise ValueError(f"thresholds cannot be {type(thresholds)} when threshold_df is {type(threshold_df)}")
+        if not threshold_df:
+            if hasattr(self, "threshold_df"):
+                threshold_df = self.threshold_df
+            else:
+                logger.info(f"threshold_df not passed to get_best_threshold hence creating it...")
+                threshold_df = self.evaluate_confidence_thresholds(thresholds=thresholds)
         if metric not in threshold_df.columns:
             raise ValueError(f"Metric '{metric}' not found in threshold DataFrame columns.")
         if threshold_df.empty:
@@ -126,9 +145,10 @@ class Evaluator(object):
         best_threshold_value = threshold_df.index[0]
         best_threshold_score = threshold_df[metric].values[0]
         logger.info(f"Best threshold: {best_threshold_value} with score: {best_threshold_score}")
-        return {"best_threshold_value": best_threshold_value,
-                f"best_threshold_{metric}_score": best_threshold_score,
-                }
+        self.best_threshold_results = {"best_threshold_value": best_threshold_value,
+                                        f"best_threshold_{metric}_score": best_threshold_score,
+                                        }
+        return self.best_threshold_results
         
     def plot_random_samples(self, n=3):
         random.seed(42)
@@ -164,6 +184,5 @@ class Evaluator(object):
         plt.tight_layout()
         plt.show()
         
-
     def __call__(self):
         return self.evaluator
