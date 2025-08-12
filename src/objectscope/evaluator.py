@@ -10,6 +10,7 @@ import random
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog, DatasetCatalog
 from objectscope import logger
+from glob import glob
 
 class Evaluator(object):
     def __init__(self, cfg, test_data_name, 
@@ -18,11 +19,11 @@ class Evaluator(object):
                  output_dir="output/object_detector",
                  **kwargs
                  ):
+        cfg.DATASETS.TEST = (test_data_name,)
         self.cfg = cfg
         self.test_data_name = test_data_name
         self.roi_heads_score_threshold = roi_heads_score_threshold
         self.output_dir = output_dir
-        
         self.evaluator = COCOEvaluator(dataset_name=self.test_data_name,
                                         tasks=tasks,
                                         distributed=False,
@@ -31,41 +32,44 @@ class Evaluator(object):
         self.dataset_nm = DatasetCatalog.get(test_data_name)
         self.metadata = MetadataCatalog.get(test_data_name)
     
-    def get_model_names(self, cfg=None):
-        self.model_names = []
+    def get_model_paths(self, cfg=None):
         cfg = cfg if cfg else self.cfg
-        max_iter = cfg.SOLVER.MAX_ITER
-        chp = cfg.SOLVER.CHECKPOINT_PERIOD
-        for i in range(1, max_iter // chp):
-            self.model_names.append(f'model_{str(i * chp - 1).zfill(7)}.pth')
-        self.model_names.append('model_final.pth')
-        return self.model_names
+        self.model_paths = glob(f"{cfg.OUTPUT_DIR}/*.pth")
+        return self.model_paths
     
-    def evaluate_models(self, cfg=None, model_names=None, 
+    def evaluate_models(self, cfg=None, model_paths=None, 
                         roi_heads_score_threshold=None,
                         ) -> pd.DataFrame:
     
         model_eval_results = {}
         cfg = cfg if cfg else self.cfg
-        if not model_names:
-            if not hasattr(self, "model_names"):
-                model_names = self.get_model_names(cfg)
+        if not model_paths:
+            if not hasattr(self, "model_paths"):
+                model_paths = self.get_model_paths(cfg)
             else:
-                model_names = self.model_names
+                model_paths = self.model_paths
                         
-        for model_name in model_names:
-            cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, model_name)
+        for model_path in model_paths:
+            cfg.MODEL.WEIGHTS = model_path
             cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = roi_heads_score_threshold if roi_heads_score_threshold else self.roi_heads_score_threshold
             predictor = DefaultPredictor(self.cfg)
             x = DefaultTrainer.test(cfg, predictor.model, evaluators=[self.evaluator])
-            model_eval_results[model_name] = x['bbox']
+            print(f"test output: {x}")
+            model_eval_results[model_path] = x['bbox']
         self.eval_df = pd.DataFrame.from_dict(model_eval_results, orient='index')
         self.eval_df.index.name = 'model_name'                
         return self.eval_df
         
-    def get_best_model(eval_df, 
+    def get_best_model(self, eval_df=None, 
                         metric='AP50'
                         ):
+        if not eval_df:
+            if hasattr(self, "eval_df"):
+                eval_df = self.eval_df
+            else:
+                eval_df = self.evaluate_models()
+        if not isinstance(eval_df, pd.DataFrame):
+            raise ValueError(f"eval_df must be a DataFrame not {type(eval_df)}")
         if metric not in eval_df.columns:
             raise ValueError(f"Metric '{metric}' not found in evaluation DataFrame columns.")
         if eval_df.empty:
@@ -75,12 +79,13 @@ class Evaluator(object):
             return eval_df.index[0], eval_df.iloc[0][metric]
         
         eval_df.sort_values(by=metric, ascending=False, inplace=True)
-        best_model_name = eval_df.index[0]
-        best_model_score = eval_df[metric].values[0]
-        logger.info(f"Best model: {best_model_name} with score: {best_model_score}")
-        return {"best_model_name": best_model_name, 
-                f"best_model_{metric}_score": best_model_score,
-                }
+        self.best_model_name = eval_df.index[0]
+        self.best_model_score = eval_df[metric].values[0]
+        logger.info(f"Best model: {self.best_model_name} with score: {self.best_model_score}")
+        self.best_model_results = {"best_model_name": self.best_model_name, 
+                                    f"best_model_{metric}_score": self.best_model_score,
+                                    }
+        return self.best_model_results
                 
     def plot_evaluation_results(df, metric='AP50',
                                 labels={"AP50": "Average Precision at IoU=0.5", "model_name": "Model Name"}
