@@ -17,7 +17,7 @@ class TrainSession(object):
                     train_metadata={}, test_metadata={},
                     output_dir="output/object_detector",device="cuda",
                     num_workers=12,imgs_per_batch=4, base_lr=0.00005,
-                    max_iter=5000, checkpoint_period=50, start_run=True,
+                    max_iter=5000, checkpoint_period=50, #start_run=True,
                     **kwargs
                 ):
         self.train_img_dir = train_img_dir
@@ -35,8 +35,7 @@ class TrainSession(object):
         self.base_lr = base_lr
         self.max_iter = max_iter
         self.checkpoint_period = checkpoint_period
-        self.start_run = start_run
-        
+        logger.info(f"num_classes: {num_classes}")
         if not test_data_name:
             test_data_name = os.path.basename(test_img_dir)
         if not train_data_name:
@@ -114,12 +113,12 @@ class TrainSession(object):
         logger.info("Creating trainer...")
         self.create_trainer()
         logger.info("Trainer created successfully.")
-        if not self.start_run:
-            logger.info("Training run not started, returning trainer instance.")
-            return self.trainer
-        else:
-            logger.info("Starting training run...")
-            self.trainer.train()
-            logger.info("Training run completed successfully.")
-            return self.trainer
+        #if not self.start_run:
+        #    logger.info("Training run not started, returning trainer instance.")
+        #    return self.trainer
+        #else:
+        logger.info("Starting training run...")
+        self.trainer.train()
+        logger.info("Training run completed successfully.")
+        return self.trainer
         
