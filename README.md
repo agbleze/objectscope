@@ -10,8 +10,16 @@ Several utilities needed to aid the model development are provided. This include
 
 ## Installation
 
+objectscope is an extension of detectron2 hence should be installed in your system for it to work properly. You can install Detectron2 as follows:
+
 ```bash
-$ pip install objectscope
+pip install git+https://github.com/facebookresearch/detectron2.git
+```
+
+Install objectscope using pip as follows:
+
+```bash
+pip install objectscope
 ```
 
 ## Usage
