@@ -98,4 +98,3 @@ def test_get_best_model(create_evaluation_result, create_evaluator):
     assert isinstance(best_model_res, dict)
     assert "best_model_name" in best_model_res.keys()
         
-    
