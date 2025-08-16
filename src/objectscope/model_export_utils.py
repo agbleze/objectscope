@@ -1,13 +1,8 @@
-from objectscope.utils import run_optimize_model
-import onnxruntime as ort
 import torch
-import detectron2
 import pickle
 from detectron2.engine import DefaultPredictor
-from detectron2.data.datasets import register_coco_instances
 from detectron2.data import build_detection_test_loader
 from detectron2.export import TracingAdapter
-import onnx
 from typing import Union
 from objectscope import logger
 
