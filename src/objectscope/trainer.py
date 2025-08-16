@@ -5,9 +5,6 @@ from detectron2.config import get_cfg
 from detectron2 import model_zoo
 from detectron2.engine import DefaultTrainer
 from objectscope import logger
-import tensorboard
-
-
 
 class TrainSession(object):
     def __init__(self,train_img_dir, train_coco_json_file, 
@@ -113,10 +110,6 @@ class TrainSession(object):
         logger.info("Creating trainer...")
         self.create_trainer()
         logger.info("Trainer created successfully.")
-        #if not self.start_run:
-        #    logger.info("Training run not started, returning trainer instance.")
-        #    return self.trainer
-        #else:
         logger.info("Starting training run...")
         self.trainer.train()
         logger.info("Training run completed successfully.")
