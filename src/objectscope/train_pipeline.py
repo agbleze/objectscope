@@ -3,8 +3,7 @@ from objectscope.evaluator import Evaluator
 from objectscope import logger
 from argparse import ArgumentParser
 import os
-import pandas as pd
-from utils import launch_tensorboard, run_optimize_model
+from objectscope.utils import launch_tensorboard, run_optimize_model
 import subprocess
 from decouple import config
 from onnx import load
@@ -64,9 +63,6 @@ def parse_args():
     parser.add_argument("--checkpoint_period", type=int, required=True,
                         help="Period for saving checkpoints"
                         )
-    # parser.add_argument("--start_run", action='store_true',
-    #                     help="Whether to start the training run on initialization"
-    #                     )
     parser.add_argument("--roi_heads_score_threshold", type=float, default=0.5,
                         help="Score threshold for ROI heads during evaluation"
                         )
@@ -85,17 +81,30 @@ def parse_args():
 
 def main():
     args = parse_args()
-    
+    if args.train_data_name:
+        train_data_name = args.train_data_name 
+    else:
+        try:
+            train_data_name = config("TRAIN_DATA_NAME")
+        except:
+            train_data_name = None
+    if args.test_data_name:
+        test_data_name = args.test_data_name 
+    else:
+        try:
+            test_data_name = config("TEST_DATA_NAME")
+        except:
+            test_data_name = None
     trainer = TrainSession(train_img_dir=args.train_img_dir if args.train_img_dir else config("TRAIN_IMG_DIR"),
                             train_coco_json_file=args.train_coco_json_file if args.train_coco_json_file else config("TRAIN_COCO_JSON_FILE"),
                             test_img_dir=args.test_img_dir if args.test_img_dir else config("TEST_IMG_DIR"),
                             test_coco_json_file=args.test_coco_json_file if args.test_coco_json_file else config("TEST_COCO_JSON_FILE"),
                             config_file_url=args.config_file_url if args.config_file_url else config("CONFIG_FILE_URL"),
                             num_classes=args.num_classes if args.num_classes else config("NUM_CLASSES"),
-                            train_data_name=args.train_data_name if args.train_data_name else config("TRAIN_DATA_NAME"),
-                            test_data_name=args.test_data_name if args.test_data_name else config("TEST_DATA_NAME"),
-                            train_metadata=args.train_metadata if args.train_metadata else config("TRAIN_METADATA", cast=dict),
-                            test_metadata=args.test_metadata if args.test_metadata else config("TEST_METADATA", cast=dict),
+                            train_data_name=train_data_name,
+                            test_data_name=test_data_name,
+                            train_metadata=args.train_metadata if args.train_metadata else config("TRAIN_METADATA",default={}, cast=dict),
+                            test_metadata=args.test_metadata if args.test_metadata else config("TEST_METADATA", default={}, cast=dict),
                             output_dir=args.output_dir if args.output_dir else config("OUTPUT_DIR"),
                             device=args.device if args.device else config("DEVICE"),
                             num_workers=args.num_workers if args.num_workers else config("NUM_WORKERS", cast=int),
@@ -103,7 +112,6 @@ def main():
                             base_lr=args.base_lr if args.base_lr else config("BASE_LR", cast=float),
                             max_iter=args.max_iter if args.max_iter else config("MAX_ITER", cast=int),
                             checkpoint_period=args.checkpoint_period if args.checkpoint_period else config("CHECKPOINT_PERIOD", cast=int),
-                            #start_run=args.start_run
                         )
     trainer.run()
     
@@ -141,14 +149,13 @@ def main():
     else:
         optimize_model = args.optimize_model
     if optimize_model:
-        onnx_exporter = OnnxModelExporter(cfg_path=cfg_path,
-                                        model_path=finalmodel_path,
-                                        registered_dataset_name=name_ds_test
-                                        )
+        onnx_exporter = OnnxModelExporter(cfg_path=trainer.output_cfg_path,
+                                            model_path=best_model_res["best_model_name"],
+                                            registered_dataset_name=trainer.test_data_name
+                                            )
         onnx_exporter.export_to_onnx(save_onnx_as="onnx_sample_model.onnx")
         onnx_model = onnx.load("onnx_sample_model.onnx")
-
-        
+      
         optimize(onnx_model)
 if __name__ == "__main__":
     main()
