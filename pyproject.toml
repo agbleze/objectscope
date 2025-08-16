@@ -26,7 +26,6 @@ matplotlib-venn = "0.11.10"
 python-decouple = "3.8"
 tops = "0.2.0"
 typing = "3.7.4.3"
-triton = "2.1.0"
 onnx = "1.16.1"
 onnx-ir = "0.1.4"
 onnxconverter-common = "1.14.0"
@@ -53,12 +52,12 @@ sphinx-rtd-theme = "^2.0.0"
 sphinx = "7.4.7"
 
 [tool.semantic_release]
-version_toml = [
-    "pyproject.toml:tool.poetry.version",
-]                                                    # version location
-branch = "main"                                      # branch to make releases of
-changelog_file = "CHANGELOG.md"                      # changelog file
-build_command = "pip install poetry && poetry build" # build dists 
+version_toml = ["pyproject.toml:tool.poetry.version"]
+version_variable = ["src/objectscope/__init__.py:__version__"]
+build_command = "pip install poetry && poetry build"
+
+[tool.semantic_release.branch.main]
+changelog_file = "CHANGELOG.md"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -66,3 +65,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 objectscope = "objectscope.train_pipeline:main"
+
+[tool.semantic_release.remote.token]
+env = "GITHUB_TOKEN"
+
+[tool.semantic_release.commit_author]
+env = "GIT_COMMIT_AUTHOR"
+default = "semantic-release <auto-build>"
+
+[tool.semantic_release.publish]
+upload_to_vcs_release=true
+dist_glob_patterns = ["dist/"]
