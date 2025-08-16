@@ -1,7 +1,6 @@
 from tensorboard import program
 from objectscope import logger
 import subprocess
-import os
 
 def launch_tensorboard(logdir, port=None):
     if not port:
