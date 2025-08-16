@@ -1,7 +1,6 @@
 from detectron2.engine import DefaultTrainer, DefaultPredictor
 from detectron2.evaluation import COCOEvaluator
 import os
-import logging
 import pandas as pd
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -64,7 +63,7 @@ class Evaluator(object):
     def get_best_model(self, eval_df=None, 
                         metric='AP50'
                         ):
-        if not eval_df:
+        if  eval_df is None:
             if hasattr(self, "eval_df"):
                 eval_df = self.eval_df
             else:
@@ -91,7 +90,7 @@ class Evaluator(object):
     def plot_evaluation_results(self, df: Union[pd.DataFrame, None]=None, metric='AP50',
                                 labels={"AP50": "Average Precision at IoU=0.5", "model_name": "Model Name"}
                                 ):
-        if not df:
+        if  df is None:
             if hasattr(self, "eval_df"):
                 df = self.eval_df
             else:
@@ -126,7 +125,7 @@ class Evaluator(object):
                             metric="AP50", 
                             thresholds: Union[List,None] = None,
                             ) -> dict:
-        if not threshold_df and not thresholds:
+        if  threshold_df is None and thresholds is None:
             raise ValueError(f"thresholds cannot be {type(thresholds)} when threshold_df is {type(threshold_df)}")
         if not threshold_df:
             if hasattr(self, "threshold_df"):
