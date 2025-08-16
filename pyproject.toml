@@ -9,16 +9,12 @@ readme = "README.md"
 [[tool.poetry.source]]
 name = "pytorch"
 url = "https://download.pytorch.org/whl/cu118"
-
-[[tool.poetry.source]]
-name = "pypi"
-url = "https://pypi.org/simple"
+priority = "supplemental"
 
 [tool.poetry.dependencies]
 python = "^3.10.14"
-numpy = "1.2.6"
+numpy = "1.26.4"
 cpauger = "1.1.2"
-detectron2 = "0.6"
 pandas = "2.2.3"
 opencv-contrib-python = "4.10.0.84"
 opencv-python = "4.10.0.84"
@@ -40,7 +36,7 @@ onnxruntime-genai = "0.9.0"
 onnxruntime-genai-cuda = "0.9.0"
 onnxruntime-gpu = "1.22.0"
 onnxscript = "0.3.2"
-#tensorboard = "2.15.2"
+tensorboard = "2.15.2"
 torch = { version = "2.1.1+cu118", source = "pytorch" }
 torchvision = { version = "0.16.1+cu118", source = "pytorch" }
 
