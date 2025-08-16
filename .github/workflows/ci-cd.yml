@@ -22,7 +22,10 @@ jobs:
 
     - name: Install system dependencies
       run:  sudo apt-get update && sudo apt-get install -y git
-      
+
+    - name: Install torch
+      run:  pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118
+
     - name: Instal Detectron2 
       run: pip install git+https://github.com/facebookresearch/detectron2.git
 
