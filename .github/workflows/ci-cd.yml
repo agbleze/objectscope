@@ -14,6 +14,14 @@ jobs:
       with:
         python-version: 3.10.14
 
+    - name: Create venv and install dependencies
+      run: |
+        python3 -m venv check_venv
+        source check_venv/bin/activate
+        pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+        pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
+        echo "check_venv/bin" >> $GITHUB_PATH
+
     - name: Check-out repository
       uses: actions/checkout@v2
 
@@ -22,11 +30,6 @@ jobs:
 
     - name: Install system dependencies
       run:  |
-        sudo apt-get update && sudo apt-get install -y git && pip install wheel
-        python3 -m venv check_venv
-        source check_venv/bin/activate
-        pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-        pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
         poetry config virtualenvs.create false
         poetry install
         poetry run pytest tests/ --cov=objectscope --cov-report=xml
@@ -51,7 +54,8 @@ jobs:
         files: ./coverage.xml
 
     - name: Build documentation
-      run: poetry run make html --directory docs/
+      run: |
+        poetry run make html --directory docs/
 
   cd:
     permissions: #read-all | write-all
