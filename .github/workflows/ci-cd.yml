@@ -27,9 +27,9 @@ jobs:
         source check_venv/bin/activate
         pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
         pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
-        poetry env use check_venv
+        poetry config virtualenvs.create false
         poetry install
-        pytest tests/ --cov=objectscope --cov-report=xml
+        poetry run pytest tests/ --cov=objectscope --cov-report=xml
 
     # - name: Install torch
     #   run:  pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
