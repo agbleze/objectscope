@@ -25,21 +25,25 @@ jobs:
         sudo apt-get update && sudo apt-get install -y git && pip install wheel
         python3 -m venv check_venv
         source check_venv/bin/activate
-
-    - name: Install torch
-      run:  pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-
-    - name: Instal Detectron2 
-      run: pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
-
-    - name: Install package
-      run: |
-        poetry env list
+        pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+        pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
         poetry env use check_venv
         poetry install
+        pytest tests/ --cov=objectscope --cov-report=xml
 
-    - name: Test with pytest
-      run: pytest tests/ --cov=objectscope --cov-report=xml
+    # - name: Install torch
+    #   run:  pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+
+    # - name: Instal Detectron2 
+    #   run: pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
+
+    # - name: Install package
+    #   run: |
+    #     poetry env use check_venv
+    #     poetry install
+
+    # - name: Test with pytest
+    #   run: pytest tests/ --cov=objectscope --cov-report=xml
 
     - name: Use Codecov to track coverage
       uses: codecov/codecov-action@v2
