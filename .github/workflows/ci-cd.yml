@@ -9,6 +9,9 @@ jobs:
 
     # define job steps
     steps: 
+    - name: Check-out repository
+      uses: actions/checkout@v2
+
     - name: Set up Python 3.10.14
       uses: actions/setup-python@v2
       with:
@@ -16,8 +19,12 @@ jobs:
 
     - name: Create venv and install dependencies
       run: |
+        echo "::group:: Create and Activate python"
         python3 -m venv check_venv
         source check_venv/bin/activate
+        echo "::endgroup::"
+
+        echo "::group:: Install Dependencies"
         pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
         pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
         pip install poetry
@@ -26,9 +33,9 @@ jobs:
         which python
         which poetry
         poetry --version
+        echo "::endgroup::"
 
-    - name: Check-out repository
-      uses: actions/checkout@v2
+    
 
     - name: Install system dependencies
       run:  |
