@@ -34,6 +34,7 @@ jobs:
 
     - name: Install package
       run: |
+        poetry env list
         poetry env use check_venv
         poetry install
 
