@@ -20,17 +20,19 @@ jobs:
         source check_venv/bin/activate
         pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
         pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
+        pip install poetry
         echo "check_venv/bin" >> $GITHUB_PATH
+        echo "-> PATH=$PATH"
+        which python
+        which poetry
+        poetry --version
 
     - name: Check-out repository
       uses: actions/checkout@v2
 
-    - name: Install poetry
-      uses: snok/install-poetry@v1
-
     - name: Install system dependencies
       run:  |
-        poetry config virtualenvs.create false
+        poetry config virtualenvs.create false --local
         poetry install
         poetry run pytest tests/ --cov=objectscope --cov-report=xml
 
@@ -55,6 +57,7 @@ jobs:
 
     - name: Build documentation
       run: |
+        poetry config virtualenvs.create false --local
         poetry run make html --directory docs/
 
   cd:
