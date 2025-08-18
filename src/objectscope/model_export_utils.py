@@ -5,6 +5,7 @@ from detectron2.data import build_detection_test_loader
 from detectron2.export import TracingAdapter
 from typing import Union
 from objectscope import logger
+from detectron2.export import scripting_with_instances
 
 class OnnxModelExporter(object):
     def __init__(self, cfg_path, model_path, 
