@@ -81,3 +81,17 @@ class OnnxModelExporter(object):
                             f = f, opset_version=16
                             )
         logger.info(f"Successfully exported model to onnx at: {save_onnx_as}")
+        
+    def create_script_model(self, 
+                            model: Union[DefaultPredictor, None]=None,
+                            fields=fields
+                            ):
+        if not model:
+            if hasattr(self, "model"):
+                model = self.model
+            if not hasattr(self, "model"):
+                model = self.get_predictor()
+        self.scripted_model = scripting_with_instances(model.eval(), 
+                                                  fields=fields
+                                                  )
+        return self.scripted_model
