@@ -6,6 +6,18 @@ from detectron2.export import TracingAdapter
 from typing import Union
 from objectscope import logger
 from detectron2.export import scripting_with_instances
+from torch import Tensor
+from detectron2.structures import Boxes
+
+fields = {"proposal_boxes": Boxes,
+    "objectness_logits": Tensor,
+    "pred_boxes": Boxes,
+    "scores": Tensor,
+    "pred_classes": Tensor,
+    "pred_masks": Tensor,
+    "pred_keypoints": Tensor,
+    "pred_keypoint_heatmaps": Tensor,
+    }
 
 class OnnxModelExporter(object):
     def __init__(self, cfg_path, model_path, 
