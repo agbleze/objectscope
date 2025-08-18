@@ -8,6 +8,7 @@ from objectscope import logger
 from detectron2.export import scripting_with_instances
 from torch import Tensor
 from detectron2.structures import Boxes
+from typing import Literal
 
 fields = {"proposal_boxes": Boxes,
     "objectness_logits": Tensor,
@@ -95,3 +96,21 @@ class OnnxModelExporter(object):
                                                   fields=fields
                                                   )
         return self.scripted_model
+    
+    def save_model(self, format=Literal["trace", "script"],
+                   model: Union[DefaultPredictor, None]=None,
+                    inputs=None, save_model_as="model.pt"
+                    ):
+        if format not in ["trace", "script"]:
+            raise ValueError(f"format has to be either trace or script not {format}")
+        if format == "trace":
+            model = self.get_traceadapted_model(model=model,
+                                                        inputs=inputs
+                                                        )
+            model.eval()
+            model = torch.jit.trace(func=model, example_inputs=model.flattened_inputs
+                                    )
+        else:
+            model = self.create_script_model(model=None)
+            model.eval()
+        model.save(save_model_as)
