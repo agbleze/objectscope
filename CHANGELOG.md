@@ -1,8 +1,21 @@
 # CHANGELOG
 
+## v1.9.0 (2025-08-18)
+
+### Build
+
+* build: change pip to poetry for install from testpypi ([`ce19a93`](https://github.com/agbleze/objectscope/commit/ce19a93e0f9f73b8a28bb566760527e8403b22eb))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/agbleze/objectscope into main
+chores: reconcil remote 1.8 ([`970acb4`](https://github.com/agbleze/objectscope/commit/970acb46872757a86e497455c6e4f680f9211180))
+
 ## v1.8.0 (2025-08-18)
 
 ### Feature
+
+* feat: add save_model ([`8514da9`](https://github.com/agbleze/objectscope/commit/8514da930375a44ed0be88234ea1e40c501c4c2f))
 
 * feat: add create_script_model ([`8193922`](https://github.com/agbleze/objectscope/commit/81939224272c7636fb8135b5224dee28a2878528))
 
