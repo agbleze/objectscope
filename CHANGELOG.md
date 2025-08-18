@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v1.8.0 (2025-08-18)
+
+### Feature
+
+* feat: add create_script_model ([`8193922`](https://github.com/agbleze/objectscope/commit/81939224272c7636fb8135b5224dee28a2878528))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/agbleze/objectscope into main
+chores: update with remote ([`a354752`](https://github.com/agbleze/objectscope/commit/a354752e61fba36b41b87e17ee6f8c1abacd1185))
+
 ## v1.7.0 (2025-08-17)
 
 ### Build
@@ -56,11 +67,17 @@
 
 * build: update workflow ([`78835c9`](https://github.com/agbleze/objectscope/commit/78835c99f35afd06aac0ae54d2d3f9050ba351b9))
 
+### Chore
+
+* chore: add module imports ([`8ad3940`](https://github.com/agbleze/objectscope/commit/8ad3940047f87f629814cdb5e45731321fb696d5))
+
 ### Documentation
 
 * docs: update README ([`43a2064`](https://github.com/agbleze/objectscope/commit/43a2064cd85d6d4e58438fdcd581a94c2722e4d9))
 
 ### Feature
+
+* feat: add fileds ([`bf0ef15`](https://github.com/agbleze/objectscope/commit/bf0ef155c6c7534ac3c0e5927a2a3609fecf66c2))
 
 * feat: add unit tests ([`1e0a005`](https://github.com/agbleze/objectscope/commit/1e0a005feaf67ca206c5a866e7ec16c4bed8d5f7))
 
