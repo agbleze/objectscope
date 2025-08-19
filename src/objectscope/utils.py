@@ -1,6 +1,8 @@
 from tensorboard import program
 from objectscope import logger
 import subprocess
+from PIL import Image
+import numpy as np
 
 def launch_tensorboard(logdir, port=None):
     if not port:
@@ -29,3 +31,31 @@ def run_optimize_model(model_name_or_path, output_dir, device="cpu",
             ]
     subprocess.run(cmd, check=True)
     logger.info("Model optimization completed.")
+
+
+def compute_statistics(img_paths: list):
+    channel_sum    = np.zeros(3, dtype=np.float64)
+    channel_sqsum  = np.zeros(3, dtype=np.float64)
+    total_pixels   = 0
+
+    for path in img_paths:
+        with Image.open(path) as img:
+            img = img.convert("RGB")
+            arr = np.asarray(img, dtype=np.float64) / 255.0 
+
+        h, w, _ = arr.shape
+        pixels = h * w
+
+        channel_sum   += arr.sum(axis=(0, 1))
+        channel_sqsum += (arr ** 2).sum(axis=(0, 1))
+        total_pixels  += pixels
+
+    mean = channel_sum / total_pixels
+    var  = channel_sqsum / total_pixels - mean ** 2
+    std  = np.sqrt(var)
+
+    return {
+        "chan_mean": mean,  
+        "chan_std":  std,   
+        "chan_var":  var,   
+    }
