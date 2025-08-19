@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.10.0 (2025-08-19)
+
+### Feature
+
+* feat: add compute_statistics ([`ecea3d9`](https://github.com/agbleze/objectscope/commit/ecea3d9ab6c07cbc584af4be1371b7f5e01c7d1f))
+
 ## v1.9.0 (2025-08-18)
 
 ### Build
