@@ -4,13 +4,13 @@ import subprocess
 from PIL import Image
 import numpy as np
 
-def launch_tensorboard(logdir, port=None):
-    if not port:
-        port = "default"
+def launch_tensorboard(logdir, port_num=None):
+    if not port_num:
+        port_num = "default"
     tb = program.TensorBoard()
-    argv = [None, "--logdir", logdir, "--port", port]
+    argv = [None, "--logdir", logdir, "--port", port_num]
     tb.configure(argv)
-    url = tb.lauch()
+    url = tb.launch()
     logger.info(f"TensorBoard launched at {url}")
     
     
