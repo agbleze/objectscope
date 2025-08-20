@@ -102,7 +102,10 @@ class TrainSession(object):
     
     def create_trainer(self):
         self.register_dataset()
-        cfg, output_cfg_path = self.create_config()
+        if hasattr(self, "cfg"):
+            cfg = self.cfg
+        else:
+            cfg, output_cfg_path = self.create_config()
         self.get_trainer(cfg=cfg)
         return self.trainer
 
