@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v1.11.0 (2025-08-20)
+
+### Feature
+
+* feat: add logging to create_trainer ([`e5f3229`](https://github.com/agbleze/objectscope/commit/e5f3229af706ca6946ce78e7c832e8170c8c3a9a))
+
+* feat: add logging to get_best_model ([`e2302a8`](https://github.com/agbleze/objectscope/commit/e2302a82395a28885cc26ccbf6f8d31909e10ae5))
+
+### Fix
+
+* fix: change tensorboard launch commard ([`91eae44`](https://github.com/agbleze/objectscope/commit/91eae44b0a2c8172506fccbbc918c8d41adf5313))
+
+* fix: add reuse of existing of cfg tp create_trainer ([`edc8775`](https://github.com/agbleze/objectscope/commit/edc87753c9caa6d050c3061593db8fc69dce0824))
+
 ## v1.10.0 (2025-08-19)
 
 ### Feature
