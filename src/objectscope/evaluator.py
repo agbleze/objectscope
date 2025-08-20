@@ -67,6 +67,7 @@ class Evaluator(object):
             if hasattr(self, "eval_df"):
                 eval_df = self.eval_df
             else:
+                logger.info(f"eval_df not passed to get_best_model hence evaluating models to create it...")
                 eval_df = self.evaluate_models()
         if not isinstance(eval_df, pd.DataFrame):
             raise ValueError(f"eval_df must be a DataFrame not {type(eval_df)}")
