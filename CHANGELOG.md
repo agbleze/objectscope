@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.11.1 (2025-08-21)
+
+### Fix
+
+* fix: update OnnxModelExporter has no inputs attribute ([`2b498b8`](https://github.com/agbleze/objectscope/commit/2b498b8974596dd22712c14bcadcafd0078b55bd))
+
 ## v1.11.0 (2025-08-20)
 
 ### Feature
