@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.12.0 (2025-08-22)
+
+### Feature
+
+* feat: add dynamic axis to export_to_onnx ([`9a40bcc`](https://github.com/agbleze/objectscope/commit/9a40bcc9f450ab42797a76d35753c51a0f9a79fa))
+
 ## v1.11.1 (2025-08-21)
 
 ### Fix
