@@ -21,6 +21,7 @@ fields = {"proposal_boxes": Boxes,
     "pred_keypoint_heatmaps": Tensor,
     }
 
+
 class OnnxModelExporter(object):
     def __init__(self, cfg_path, model_path, 
                  registered_dataset_name
@@ -70,7 +71,7 @@ class OnnxModelExporter(object):
     
     def export_to_onnx(self, save_onnx_as, inputs=None,
                         model=None, 
-                        torchscript_formart: Literal["trace", "script"] = "script"
+                        torchscript_formart: Literal["trace", "script"] = "trace"
                         ):
         if torchscript_formart not in ["trace", "script"]:
             raise ValueError(f"torchscript_formart has to be either trace or script not {torchscript_formart}")
@@ -80,17 +81,12 @@ class OnnxModelExporter(object):
                     model = self.wrapper
                 else:
                     model = self.get_traceadapted_model(inputs=inputs)
-                #model.eval()
             else:
                 if hasattr(self, "scripted_model"):
                     model = self.scripted_model
                 else:
                     model = self.create_script_model()
-            #model.eval() #.train(True)  # hack to make conversion to onnx possible since onnx turns train off internally
-        # traced_model = self.get_traceadapted_model(model=model,
-        #                                            inputs=inputs
-        #                                            )
-        #inputs = inputs if inputs else self.
+        
         if not inputs:
             if hasattr(self, "inputs"):
                 inputs = self.inputs
@@ -103,12 +99,15 @@ class OnnxModelExporter(object):
                             args = (image,),
                             f = f, opset_version=16,
                             export_params=True,
+                            input_names=["input"],
+                            output_names=["boxes", "classes", "scores"],
                             training=TrainingMode.PRESERVE,
                             do_constant_folding=True,
                             dynamic_axes={
-                                "input": {0: "batch_size"},
-                                #"image": {0: "batch_size", 2: "height", 3: "width"},
-                                "output": {0: "batch_size"}
+                                "input": {0: "batch_size", 1:"height", 2: "width"},
+                                "boxes": {0: "batch_size"},
+                                "classes": {0: "batch_size"},
+                                "scores": {0: "batch_size"},
                                 }
                             )
         logger.info(f"Successfully exported model to onnx at: {save_onnx_as}")
