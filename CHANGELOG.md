@@ -1,8 +1,23 @@
 # CHANGELOG
 
+## v1.13.0 (2025-08-23)
+
+### Feature
+
+* feat: add anchor sizes and ratios ([`ead5259`](https://github.com/agbleze/objectscope/commit/ead5259ce6bdc550e05836798f3bca0c1cbc4bb7))
+
+* feat: add draw_bbox_and_polygons ([`e190329`](https://github.com/agbleze/objectscope/commit/e19032954d8ea7a2b36447b8b0929abf33c7769e))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/agbleze/objectscope into main
+chores: reconcile with remote ([`22869e4`](https://github.com/agbleze/objectscope/commit/22869e433dbfdc888168e176b4d772e859a208aa))
+
 ## v1.12.0 (2025-08-22)
 
 ### Feature
+
+* feat: add predict_bbox ([`e17b884`](https://github.com/agbleze/objectscope/commit/e17b8842e4b9f2cb163a6880412168ac191e56b5))
 
 * feat: add dynamic axis to export_to_onnx ([`9a40bcc`](https://github.com/agbleze/objectscope/commit/9a40bcc9f450ab42797a76d35753c51a0f9a79fa))
 
