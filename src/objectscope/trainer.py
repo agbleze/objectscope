@@ -5,6 +5,7 @@ from detectron2.config import get_cfg
 from detectron2 import model_zoo
 from detectron2.engine import DefaultTrainer
 from objectscope import logger
+from typing import Union, List
 
 class TrainSession(object):
     def __init__(self,train_img_dir, train_coco_json_file, 
@@ -66,8 +67,32 @@ class TrainSession(object):
                         max_iter=None, checkpoint_period=None,
                         output_dir=None,
                         device=None, train_data_name=None, 
-                        test_data_name=None
-                ):
+                        test_data_name=None,
+                        anchor_ratios: Union[None, List[List]]=None,
+                        anchor_sizes: Union[None, List[List]]=None,
+                        evaluate_period=1
+                        ):
+        """_summary_
+
+        Args:
+            num_classes (_type_, optional): _description_. Defaults to None.
+            config_file_url (_type_, optional): _description_. Defaults to None.
+            num_workers (_type_, optional): _description_. Defaults to None.
+            imgs_per_batch (_type_, optional): _description_. Defaults to None.
+            base_lr (_type_, optional): _description_. Defaults to None.
+            max_iter (_type_, optional): _description_. Defaults to None.
+            checkpoint_period (_type_, optional): _description_. Defaults to None.
+            output_dir (_type_, optional): _description_. Defaults to None.
+            device (_type_, optional): _description_. Defaults to None.
+            train_data_name (_type_, optional): _description_. Defaults to None.
+            test_data_name (_type_, optional): _description_. Defaults to None.
+            anchor_ratios (Union[None, List[List]], optional): Anchor ratios use for generating anchor boxes. Example [[0.7685566328549631, 1.8715268243900367, 1.1942387054643602]].
+            anchor_sizes (list, optional): Anchor sizes use for generating anchor boxes and RPN. Example [[240.9236833908755], [59.864835712691715], [153.60699447681742], [434.33823627084996], [103.37411650130916]].
+            evaluate_period (int, optional): _description_. Defaults to 1.
+
+        Returns:
+            _type_: _description_
+        """
         os.makedirs(name=output_dir if output_dir else self.output_dir, 
                     exist_ok=True
                     )
@@ -91,6 +116,16 @@ class TrainSession(object):
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes if num_classes else self.num_classes
         self.cfg.MODEL.DEVICE = device if device else self.device
         self.cfg.OUTPUT_DIR = output_dir if output_dir else self.output_dir
+        
+        if evaluate_period > 0:
+            logger.info(f"Setting evaluation period: {evaluate_period}")
+            self.cfg.TEST.EVAL_PERIOD = evaluate_period
+        if anchor_ratios:
+            logger.info(f"Setting anchor ratios: {anchor_ratios}")
+            self.cfg.MODEL.ANCHOR_GENERATOR.ASPECT_RATIOS = anchor_ratios
+        if anchor_sizes:
+            logger.info(f"Setting anchor sizes: {anchor_sizes}")
+            self.cfg.MODEL.ANCHOR_GENERATOR.SIZES = anchor_sizes
         with open(self.output_cfg_path, "wb") as f:
             pickle.dump(self.cfg, f, protocol = pickle.HIGHEST_PROTOCOL)
 
