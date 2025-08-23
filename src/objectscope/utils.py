@@ -3,6 +3,8 @@ from objectscope import logger
 import subprocess
 from PIL import Image
 import numpy as np
+import onnxruntime as ort
+from PIL import Image, ImageDraw, ImageFont
 
 def launch_tensorboard(logdir, port_num=None):
     if not port_num:
@@ -59,3 +61,15 @@ def compute_statistics(img_paths: list):
         "chan_std":  std,   
         "chan_var":  var,   
     }
+
+
+def predict_bbox(image, model_path):
+    ort_session = ort.InferenceSession(model_path)
+    input_name = ort_session.get_inputs()[0].name
+    output = ort_session.run(None, {input_name: image})
+    return {"bbox": output[0],
+            "class": output[1],
+            "score": output[2],
+            "shape": output[3],
+            }
+    
