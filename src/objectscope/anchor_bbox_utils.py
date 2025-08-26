@@ -8,6 +8,8 @@ from detectron2.engine import DefaultTrainer
 import math
 from tqdm import tqdm
 import torch
+from pandas import json_normalize
+import json
 
 plt.rcParams["figure.dpi"] = 150
 
@@ -141,4 +143,31 @@ def get_anchor_sizes_ratios(trainer: DefaultTrainer, iterations=1000,):
     e_sizes, e_ratios = evolve(gt_sizes, gt_ratios, gt_wh, 
                            iterations=1_000
                            )
-    
+
+
+def coco_annotation_to_df(coco_annotation_file):
+    with open(coco_annotation_file, "r") as annot_file:
+        annotation = json.load(annot_file)
+    annotations_df = json_normalize(annotation, "annotations")
+    annot_imgs_df = json_normalize(annotation, "images")
+    annot_cat_df = json_normalize(annotation, "categories")
+    annotations_images_merge_df = annotations_df.merge(annot_imgs_df, left_on='image_id', 
+                                                        right_on='id',
+                                                        suffixes=("_annotation", "_image"),
+                                                        how="outer"
+                                                        )
+    annotations_imgs_cat_merge = annotations_images_merge_df.merge(annot_cat_df, left_on="category_id", right_on="id",
+                                                                    suffixes=(None, '_categories'),
+                                                                    how="outer"
+                                                                    )
+    all_merged_df = annotations_imgs_cat_merge[['id_annotation', 'image_id','category_id', 'bbox', 'area', 'segmentation', 'iscrowd',
+                                'file_name', 'height', 'width', 'name', 'supercategory'
+                                ]]
+    all_merged_df.rename(columns={"name": "category_name",
+                                  "height": "image_height",
+                                  "width": "image_width"}, 
+                         inplace=True
+                         )
+    all_merged_df.dropna(subset=["file_name"], inplace=True)
+    return all_merged_df
+        
