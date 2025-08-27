@@ -1,8 +1,21 @@
 # CHANGELOG
 
+## v1.14.0 (2025-08-26)
+
+### Feature
+
+* feat: add coco_annotation_to_df ([`a4abc14`](https://github.com/agbleze/objectscope/commit/a4abc14f0e8ba5c955662f6b025ef083b27c2e67))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/agbleze/objectscope into main
+chores: update with new release ([`5990db8`](https://github.com/agbleze/objectscope/commit/5990db87e8f1b9183d20310384819a2c8ee3ff71))
+
 ## v1.13.0 (2025-08-23)
 
 ### Feature
+
+* feat: add anchor_bbox_utils ([`b6012b5`](https://github.com/agbleze/objectscope/commit/b6012b51d67d135f044b20e312a30ce9932b3738))
 
 * feat: add anchor sizes and ratios ([`ead5259`](https://github.com/agbleze/objectscope/commit/ead5259ce6bdc550e05836798f3bca0c1cbc4bb7))
 
