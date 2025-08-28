@@ -1,5 +1,6 @@
 from detectron2.engine import DefaultTrainer, DefaultPredictor
 from detectron2.evaluation import COCOEvaluator
+from detectron2.data import build_detection_test_loader
 import os
 import pandas as pd
 import plotly.express as px
@@ -53,7 +54,9 @@ class Evaluator(object):
             cfg.MODEL.WEIGHTS = model_path
             cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = roi_heads_score_threshold if roi_heads_score_threshold else self.roi_heads_score_threshold
             predictor = DefaultPredictor(self.cfg)
-            x = DefaultTrainer.test(cfg, predictor.model, evaluators=[self.evaluator])
+            trainer = DefaultTrainer(cfg)
+            trainer.resume_or_load(True)
+            x = trainer.test(cfg, predictor.model, evaluators=[self.evaluator])
             print(f"test output: {x}")
             model_eval_results[model_path] = x['bbox']
         self.eval_df = pd.DataFrame.from_dict(model_eval_results, orient='index')
