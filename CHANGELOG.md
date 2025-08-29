@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v1.14.1 (2025-08-29)
+
+### Fix
+
+* fix: add gt_sizes and ratios ([`7b4bd91`](https://github.com/agbleze/objectscope/commit/7b4bd91a4d18d5c4244dd1b1a17f6fe28d69e714))
+
+### Style
+
+* style: remove commented code ([`8de17d9`](https://github.com/agbleze/objectscope/commit/8de17d93b05b0ba5cbc91673dde6ed01fb00f2e3))
+
+### Unknown
+
+* Merge branch &#39;main&#39; of https://github.com/agbleze/objectscope into main
+
+chores: update with remote ([`8634deb`](https://github.com/agbleze/objectscope/commit/8634deba20fef670ffb2b478b37acec15b553c3a))
+
 ## v1.14.0 (2025-08-26)
 
 ### Feature
@@ -7,6 +23,8 @@
 * feat: add coco_annotation_to_df ([`a4abc14`](https://github.com/agbleze/objectscope/commit/a4abc14f0e8ba5c955662f6b025ef083b27c2e67))
 
 ### Unknown
+
+* chores: add dockerfile for gpu torch tensorflow ([`65d7c5b`](https://github.com/agbleze/objectscope/commit/65d7c5b97348bf667c4007b87ef9427899e4207b))
 
 * Merge branch &#39;main&#39; of https://github.com/agbleze/objectscope into main
 chores: update with new release ([`5990db8`](https://github.com/agbleze/objectscope/commit/5990db87e8f1b9183d20310384819a2c8ee3ff71))
