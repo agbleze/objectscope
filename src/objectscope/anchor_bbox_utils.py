@@ -140,6 +140,8 @@ def generate_cell_anchors(sizes=(32, 64, 128, 256, 512),
 def get_anchor_sizes_ratios(trainer: DefaultTrainer, iterations=1000,):
     gt_boxes = get_gt_boxes(trainer, 1000)
     gt_wh = boxes2wh(gt_boxes)
+    gt_sizes = wh2size(gt_wh)
+    gt_ratios = wh2ratio(gt_wh)
     e_sizes, e_ratios = evolve(gt_sizes, gt_ratios, gt_wh, 
                            iterations=1_000
                            )
