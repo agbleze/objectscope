@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.6 (2025-08-30)
+
+### Fix
+
+* fix: update with torch cuda wheel extra link ([`fab0ba4`](https://github.com/agbleze/objectscope/commit/fab0ba4d1a8994ecdbdee1ea8c7d8aa9d0765390))
+
 ## v1.16.5 (2025-08-30)
 
 ### Fix
