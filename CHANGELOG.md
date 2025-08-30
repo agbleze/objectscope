@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.8 (2025-08-30)
+
+### Fix
+
+* fix: cleanup unused cicd ([`ad80c40`](https://github.com/agbleze/objectscope/commit/ad80c409bc1060880d7b240622afc6e18e844340))
+
 ## v1.16.7 (2025-08-30)
 
 ### Fix
