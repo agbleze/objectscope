@@ -138,14 +138,23 @@ def generate_cell_anchors(sizes=(32, 64, 128, 256, 512),
 
 
 def get_anchor_sizes_ratios(trainer: DefaultTrainer, iterations=1000,):
-    gt_boxes = get_gt_boxes(trainer, 1000)
+    gt_boxes = get_gt_boxes(trainer, iterations)
     gt_wh = boxes2wh(gt_boxes)
     gt_sizes = wh2size(gt_wh)
     gt_ratios = wh2ratio(gt_wh)
     e_sizes, e_ratios = evolve(gt_sizes, gt_ratios, gt_wh, 
-                           iterations=1_000
+                           iterations=iterations
                            )
+    return e_sizes, e_ratios
 
+
+def get_size_ratio_fitness_score(sizes, ratios, gt_wh):
+    anchors = generate_cell_anchors(sizes=tuple(sizes), 
+                                    aspect_ratios=tuple(ratios)
+                                    )
+    anchor_wh = boxes2wh(anchors)
+    fit_score = fitness(anchor_wh, gt_wh)
+    return fit_score
 
 def coco_annotation_to_df(coco_annotation_file):
     with open(coco_annotation_file, "r") as annot_file:
