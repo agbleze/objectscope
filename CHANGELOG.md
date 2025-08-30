@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.15.0 (2025-08-30)
+
+### Feature
+
+* feat: add AnchorMiner ([`3658046`](https://github.com/agbleze/objectscope/commit/3658046f1d452f320dfd1066026e1b774cdf4915))
+
+* feat: add get_size_ratio_fitness_score ([`8dfa6c0`](https://github.com/agbleze/objectscope/commit/8dfa6c01b84e5fa4d8e1c660270d3215a13c276a))
+
 ## v1.14.1 (2025-08-29)
 
 ### Fix
