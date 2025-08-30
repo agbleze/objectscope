@@ -138,10 +138,10 @@ jobs:
 
       - name: Test install from TestPYPI
         if: steps.testpypi_publish.outcome == 'success'
+        #pip install poetry
+        #poetry source add testpypi https://test.pypi.org/simple/
         run: |
-          pip install poetry
-          poetry source add testpypi https://test.pypi.org/simple/
-          poetry run pip install --index-url https://test.pypi.org/simple/ objectscope
+          pip install objectscope --index-url https://test.pypi.org/simple/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
