@@ -137,7 +137,7 @@ jobs:
           echo "Workspace cleaned"
 
       - name: Test install from TestPYPI
-        if: steps.testpypi_publish.outcome == "success"
+        if: steps.testpypi_publish.outcome == 'success'
         run: |
           pip install poetry
           poetry source add testpypi https://test.pypi.org/simple/
