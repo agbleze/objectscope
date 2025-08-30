@@ -128,14 +128,6 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
 
-      - name: Clean up existing repo folder
-        if: success()
-        run: |
-          echo "Cleaning workspace"
-          rm -rf $GITHUB_WORKSPACE/*
-          rm -rf $GITHUB_WORKSPACE/*
-          echo "Workspace cleaned"
-
       - name: Test install from TestPYPI
         if: steps.testpypi_publish.outcome == 'success'
         #pip install poetry
