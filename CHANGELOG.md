@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.3 (2025-08-30)
+
+### Fix
+
+* fix: remove poetry shell ([`98251d0`](https://github.com/agbleze/objectscope/commit/98251d0db7dede2502bf9a2e88b40b2b2fd67c2f))
+
 ## v1.16.2 (2025-08-30)
 
 ### Fix
