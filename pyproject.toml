@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "objectscope"
-version = "1.16.4"
+version = "1.16.5"
 description = "Object detection"
 authors = ["Agbleze"]
 license = "MIT"

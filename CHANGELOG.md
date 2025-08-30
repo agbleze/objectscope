@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.5 (2025-08-30)
+
+### Fix
+
+* fix: add extra-index-url ([`52775a6`](https://github.com/agbleze/objectscope/commit/52775a69e5e58e28118a8d7cb3fc8b6135bc13a6))
+
 ## v1.16.4 (2025-08-30)
 
 ### Fix
