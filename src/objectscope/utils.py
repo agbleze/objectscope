@@ -6,6 +6,9 @@ import numpy as np
 import onnxruntime as ort
 from PIL import Image, ImageDraw, ImageFont
 from cpauger.visualize import random_color
+from detectron2.data import MetadataCatalog
+import json
+import os
 
 def launch_tensorboard(logdir, port_num=None):
     if not port_num:
@@ -120,4 +123,19 @@ def draw_bbox_and_polygons(image, bboxes, scores,
         blended_img = Image.alpha_composite(image, mask_img)
         image = blended_img.convert("RGB")
     return image    
-    
+
+def save_class_metadata(train_data_name,
+                        save_metadata_as
+                        ):
+    metadata = MetadataCatalog.get(name=train_data_name)
+    class_metadata_map = {"thing_names": metadata.thing_classes,
+                            "thing_dataset_id_to_contiguous_id": metadata.thing_dataset_id_to_contiguous_id,
+                            "class_id_class_names": {key: metadata.thing_classes[key] 
+                                                    for key in metadata.thing_dataset_id_to_contiguous_id.keys()
+                                                    }
+                            }
+    dest_dir = os.path.dirname(save_class_metadata)
+    os.makedirs(dest_dir, exist_ok=True)    
+    with open(save_metadata_as, "w") as f:
+        json.dump(class_metadata_map, f, indent=4)
+        
