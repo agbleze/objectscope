@@ -111,7 +111,7 @@ def draw_bbox_and_polygons(image, bboxes, scores,
         if score < score_thresh:
             continue
         color = random_color()
-        bbox = [bbox[0], bbox[1], bbox[2], bbox[3]] #bbox[0]+bbox[2], bbox[1]+bbox[3]]
+        bbox = [bbox[0], bbox[1], bbox[2], bbox[3]]
         draw.rectangle(bbox, outline=color, width=2)
         if polygon:
             draw.polygon(polygon, outline=color, fill=color + (100,))
