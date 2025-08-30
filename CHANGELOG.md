@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.4 (2025-08-30)
+
+### Fix
+
+* fix: change poetry run to pip install ([`40bc0c0`](https://github.com/agbleze/objectscope/commit/40bc0c01fb1dcd4500d836da209ac51d6c387097))
+
 ## v1.16.3 (2025-08-30)
 
 ### Fix
