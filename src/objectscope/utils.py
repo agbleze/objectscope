@@ -128,13 +128,16 @@ def save_class_metadata(train_data_name,
                         save_metadata_as
                         ):
     metadata = MetadataCatalog.get(name=train_data_name)
+    logger.info(f"metadata.thing_classes: {metadata.thing_classes}")
+    logger.info(f"metadata.thing_dataset_id_to_contiguous_id: {metadata.thing_dataset_id_to_contiguous_id}")
+    
     class_metadata_map = {"thing_names": metadata.thing_classes,
                             "thing_dataset_id_to_contiguous_id": metadata.thing_dataset_id_to_contiguous_id,
                             "class_id_class_names": {key: metadata.thing_classes[key] 
-                                                    for key in metadata.thing_dataset_id_to_contiguous_id.keys()
+                                                    for key in metadata.thing_dataset_id_to_contiguous_id.values()
                                                     }
                             }
-    dest_dir = os.path.dirname(save_class_metadata)
+    dest_dir = os.path.dirname(save_metadata_as)
     os.makedirs(dest_dir, exist_ok=True)    
     with open(save_metadata_as, "w") as f:
         json.dump(class_metadata_map, f, indent=4)
