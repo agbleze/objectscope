@@ -142,7 +142,7 @@ class TrainSession(object):
             cfg = self.cfg
         else:
             logger.info(f"Creating new config... during create_trainer")
-            cfg, output_cfg_path = self.create_config()
+            cfg, _ = self.create_config()
         self.get_trainer(cfg=cfg)
         return self.trainer
 
