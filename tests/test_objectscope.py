@@ -7,6 +7,8 @@ from detectron2.engine import DefaultTrainer
 import pytest
 import tempfile
 import pandas as pd
+from objectscope.anchor_bbox_utils import AnchorMiner
+import numpy as np
 
 tempdir = tempfile.TemporaryDirectory()
 train_img_dir = os.path.join(tempdir.name,"train_random_images")
@@ -83,6 +85,10 @@ def create_evaluation_result(create_evaluator, get_config):
     eval_df = evaluator.evaluate_models(cfg=get_config)
     return eval_df
 
+@pytest.fixture(scope="class")
+def create_anchor_miner():
+    anchor_miner = AnchorMiner(coco_annotation_file=train_coco_json_file)
+    return anchor_miner
 
 def test_trainer(create_train_session):
     trainer_obj = create_train_session.run()
@@ -96,5 +102,25 @@ def test_get_best_model(create_evaluation_result, create_evaluator):
     evaluator = create_evaluator
     best_model_res = evaluator.get_best_model(eval_df)
     assert isinstance(best_model_res, dict)
-    assert "best_model_name" in best_model_res.keys()
-        
+    assert "best_model_name" in best_model_res.keys()        
+
+def test_get_sizes_ratios(create_anchor_miner):
+    anchor_miner = create_anchor_miner
+    sizes, ratios = anchor_miner.get_sizes_ratios()
+    assert isinstance(sizes, np.ndarray)
+    assert len(sizes) == 5
+    assert isinstance(ratios, np.ndarray)
+    assert len(ratios) == 3
+    assert all(isinstance(size, float) for size in sizes)
+    assert all(isinstance(ratio, float) for ratio in ratios)    
+
+def test_tune_sizes_ratios(create_anchor_miner):
+    sizes, ratios, score = create_anchor_miner.tune_sizes_ratios()
+    assert isinstance(sizes, np.ndarray)
+    assert len(sizes) == 5
+    assert isinstance(ratios, np.ndarray)
+    assert len(ratios) == 3
+    assert all(isinstance(size, float) for size in sizes)
+    assert all(isinstance(ratio, float) for ratio in ratios)
+    assert isinstance(score, float)
+    assert score <= 1
