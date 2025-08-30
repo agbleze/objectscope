@@ -1,59 +1,34 @@
 
-# COPIED FROM: https://github.com/PacktPublishing/Hands-On-Computer-Vision-with-Detectron2/blob/main/Chapter07/Detectron2_Chapter07_Anchors.ipynb
+# Adapted FROM: https://github.com/PacktPublishing/Hands-On-Computer-Vision-with-Detectron2/blob/main/Chapter07/Detectron2_Chapter07_Anchors.ipynb
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.cluster.vq import kmeans
-import torch
-from detectron2.engine import DefaultTrainer
 import math
 from tqdm import tqdm
-import torch
 from pandas import json_normalize
 import json
-
+from typing import List, Union
 plt.rcParams["figure.dpi"] = 150
-
-
-def get_gt_boxes_batch(data):
-    gt_boxes = [
-        item["instances"].get("gt_boxes").tensor 
-        for item in data
-    ]
-    return torch.concatenate(gt_boxes)
-
-def get_gt_boxes(trainer: DefaultTrainer, iterations):
-    trainer._data_loader_iter = iter(trainer.data_loader)
-    gt_boxes = [
-        get_gt_boxes_batch(next(trainer._data_loader_iter))
-        for _ in tqdm(range(iterations))
-    ]
-    return torch.concatenate(gt_boxes)
-
 
 def boxes2wh(boxes):
     x1y1 = boxes[:, :2]
     x2y2 = boxes[:, 2:]
     return x2y2 - x1y1
 
-
-def wh2size(gt_wh):
-    return torch.sqrt(gt_wh[:,0] * gt_wh[:,1])
-
 def wh2ratio(wh):
     return wh[:, 1] / wh[:, 0]
-
 
 def best_ratio(ac_wh, gt_wh):
     all_ratios = gt_wh[:, None] / ac_wh[None]
     inverse_ratios = 1 / all_ratios
-    ratios = torch.min(all_ratios, inverse_ratios)
-    worst = ratios.min(-1).values
-    best = worst.max(-1).values
+    ratios = np.minimum(all_ratios, inverse_ratios)  
+    worst = np.min(ratios, axis=-1)
+    best = np.max(worst, axis=-1)
     return best
 
 def fitness(ac_wh, gt_wh, EDGE_RATIO_THRESHOLD = 0.25):
     ratio = best_ratio(ac_wh, gt_wh)
-    return (ratio * (ratio > EDGE_RATIO_THRESHOLD).float()).mean()
+    return (ratio * (ratio > EDGE_RATIO_THRESHOLD)).mean()
 
 def best_recall(ac_wh, gt_wh, EDGE_RATIO_THRESHOLD=0.25):
     ratio = best_ratio(ac_wh, gt_wh)
@@ -123,7 +98,7 @@ def generate_cell_anchors(sizes=(32, 64, 128, 256, 512),
         aspect_ratios (tuple[float]]):
 
     Returns:
-        Tensor of shape (len(sizes) * len(aspect_ratios), 4) storing anchor boxes
+        Array of shape (len(sizes) * len(aspect_ratios), 4) storing anchor boxes
             in XYXY format.
     """
     anchors = []
@@ -134,18 +109,14 @@ def generate_cell_anchors(sizes=(32, 64, 128, 256, 512),
             h = aspect_ratio * w
             x0, y0, x1, y1 = -w / 2.0, -h / 2.0, w / 2.0, h / 2.0
             anchors.append([x0, y0, x1, y1])
-    return torch.tensor(anchors)
+    return np.array(anchors)
 
+def _wh2size(gt_wh):
+    return np.sqrt(gt_wh[:,0] * gt_wh[:,1])
 
-def get_anchor_sizes_ratios(trainer: DefaultTrainer, iterations=1000,):
-    gt_boxes = get_gt_boxes(trainer, iterations)
-    gt_wh = boxes2wh(gt_boxes)
-    gt_sizes = wh2size(gt_wh)
-    gt_ratios = wh2ratio(gt_wh)
-    e_sizes, e_ratios = evolve(gt_sizes, gt_ratios, gt_wh, 
-                           iterations=iterations
-                           )
-    return e_sizes, e_ratios
+def _boxes2wh(boxes):
+    wh = boxes[:, 2:]
+    return wh
 
 
 def get_size_ratio_fitness_score(sizes, ratios, gt_wh):
@@ -181,4 +152,57 @@ def coco_annotation_to_df(coco_annotation_file):
                          )
     all_merged_df.dropna(subset=["file_name"], inplace=True)
     return all_merged_df
+
+class AnchorMiner(object):
+    def __init__(self,
+                 coco_annotation_file: str
+                 ) -> None:
+        self.coco_annotation_file = coco_annotation_file
+        self.annotations_df = coco_annotation_to_df(coco_annotation_file) 
         
+    def get_sizes_ratios(self, num_sizes=5, num_ratios=3):
+        self.gt_boxes = np.concatenate(self.annotations_df.bbox.dropna().values).reshape(-1,4)
+        self.gt_wh = _boxes2wh(self.gt_boxes)
+        gt_sizes = _wh2size(self.gt_wh)
+        gt_ratios = wh2ratio(self.gt_wh)
+        self.sizes = estimate_clusters(gt_sizes, num_sizes)
+        self.ratios = estimate_clusters(gt_ratios, num_ratios)
+        return self.sizes, self.ratios
+    
+    def tune_sizes_ratios(self, sizes: Union[None, List]=None, 
+                          ratios: Union[None, List]=None, 
+                          iterations=10_000,
+                          include_fitness_score=True,
+                          ):
+        if not sizes and not ratios:
+            if hasattr(self, "sizes"):
+                sizes = self.sizes
+                ratios = self.ratios
+            else:
+                sizes, ratios = self.get_sizes_ratios()
+        elif not sizes:
+            if hasattr(self, "sizes"):
+                sizes = self.sizes
+            else:
+                sizes, _ = self.get_sizes_ratios()
+        elif not ratios:
+            if hasattr(self, "ratios"):
+                ratios = self.ratios
+            else:
+                _, ratios = self.get_sizes_ratios() 
+        if hasattr(self, "gt_boxes"):
+            gt_boxes = self.gt_boxes
+        else:        
+            gt_boxes = np.concatenate(self.annotations_df.bbox.dropna().values).reshape(-1,4)
+        if hasattr(self, "gt_wh"):
+            gt_wh = self.gt_wh
+        else:
+            gt_wh = _boxes2wh(gt_boxes)
+        e_sizes, e_ratios = evolve(sizes, ratios, gt_wh, 
+                                   iterations=iterations
+                                   )
+        self.tuned_sizes = e_sizes
+        self.tuned_ratios = e_ratios
+        if include_fitness_score:
+            self.fitness_score = get_size_ratio_fitness_score(e_sizes, e_ratios, gt_wh)
+        return e_sizes, e_ratios, self.fitness_score if include_fitness_score else (e_sizes, e_ratios, None)
