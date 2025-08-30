@@ -141,7 +141,7 @@ jobs:
         #pip install poetry
         #poetry source add testpypi https://test.pypi.org/simple/
         run: |
-          pip3 install objectscope --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple
+          pip3 install objectscope --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --extra-index-url https://download.pytorch.org/whl/cu118
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
