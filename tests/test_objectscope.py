@@ -9,6 +9,9 @@ import tempfile
 import pandas as pd
 from objectscope.anchor_bbox_utils import AnchorMiner
 import numpy as np
+from objectscope.utils import save_class_metadata
+from detectron2.data import MetadataCatalog
+
 
 tempdir = tempfile.TemporaryDirectory()
 train_img_dir = os.path.join(tempdir.name,"train_random_images")
@@ -18,6 +21,7 @@ test_coco_json_file=os.path.join(tempdir.name, "test_generated_annotation.json")
 train_data_name="random_train"
 test_data_name="random_test"
 output_dir=os.path.join(tempdir.name, "random_model_train")
+save_class_metadata_as = os.path.join(tempdir.name, "class_metadata_map.json")
 
 
 train_imgpaths, train_coco_path = generate_random_images_and_annotation(image_height=224, image_width=224,
@@ -124,3 +128,18 @@ def test_tune_sizes_ratios(create_anchor_miner):
     assert all(isinstance(ratio, float) for ratio in ratios)
     assert isinstance(score, float)
     assert score <= 1
+
+def test_metadata_classes_greater_than_zero(create_train_session):
+    trainer = create_train_session.run()
+    metadata = MetadataCatalog.get(name=train_data_name)
+    assert len(metadata.thing_classes) > 0
+    assert len(metadata.thing_dataset_id_to_contiguous_id.keys()) > 0
+    print(f"metadata.thing_classes: {metadata.thing_classes}") 
+    
+def test_save_class_metadata(create_train_session):
+    trainer = create_train_session.run()
+    save_class_metadata(train_data_name,
+                        save_metadata_as=save_class_metadata_as
+                        )
+    assert os.path.exists(save_class_metadata_as)
+    
