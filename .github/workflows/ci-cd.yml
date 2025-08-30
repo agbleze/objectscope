@@ -48,29 +48,8 @@ jobs:
         poetry run make html --directory docs/
         echo "::endgroup::"
 
-    
-
-    # - name: Install torch
-    #   run:  pip install torch==2.1.1+cu118 torchvision==0.16.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-
-    # - name: Instal Detectron2 
-    #   run: pip install --no-build-isolation git+https://github.com/facebookresearch/detectron2.git
-
-    # - name: Install package
-    #   run: |
-    #     poetry env use check_venv
-    #     poetry install
-
-    # - name: Test with pytest
-    #   run: pytest tests/ --cov=objectscope --cov-report=xml
-
-    # - name: Use Codecov to track coverage
-    #   uses: codecov/codecov-action@v2
-    #   with:
-    #     files: ./coverage.xml
-
   cd:
-    permissions: #read-all | write-all
+    permissions:
      id-token: write
      contents: write
     # only run this job when ci passes
@@ -98,28 +77,13 @@ jobs:
       - name: Install poetry and python-semantic-release
         uses: snok/install-poetry@v1
         
-      - name: Install semantic release 
-        #id: release
-        #uses: python-semantic-release/python-semantic-release@v8.3.0
-        #with:
-        #  github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install semantic release
         run: pip3 install python-semantic-release==9.9.0
-
       - name: Version bumping
         id: release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: semantic-release version
-
-      #- name: Build distribution package
-      #  run: poetry build
-
-      #- name: Release pub
-      #  run: semantic-release publish
-
-      #- name: Build distribution package
-      #  run: poetry build
-
       - name: Publish to TestPYPI
         id: testpypi_publish
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -130,11 +94,8 @@ jobs:
 
       - name: Test install from TestPYPI
         if: steps.testpypi_publish.outcome == 'success'
-        #pip install poetry
-        #poetry source add testpypi https://test.pypi.org/simple/
         run: |
           pip3 install objectscope --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple --extra-index-url https://download.pytorch.org/whl/cu118
-
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         if: steps.release.outputs.released == 'true'
