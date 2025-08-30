@@ -3,7 +3,9 @@ from objectscope.evaluator import Evaluator
 from objectscope import logger
 from argparse import ArgumentParser
 import os
-from objectscope.utils import launch_tensorboard, run_optimize_model
+from objectscope.utils import (launch_tensorboard, run_optimize_model,
+                               save_class_metadata
+                               )
 import subprocess
 from decouple import config
 from onnx import load
@@ -76,6 +78,9 @@ def parse_args():
     parser.add_argument("--optimize_model", action="store_true",
                         help="Whether to optimize the model after training"
                         )
+    parser.add_argument("--save_class_metadata_as",
+                        default="class_metadata_map.json"
+                        )
     
     return parser.parse_args()
 
@@ -114,6 +119,9 @@ def main():
                             checkpoint_period=args.checkpoint_period if args.checkpoint_period else config("CHECKPOINT_PERIOD", cast=int),
                         )
     trainer.run()
+    save_class_metadata(train_data_name=trainer.train_data_name,
+                        save_metadata_as=os.path.join(trainer.output_dir, args.save_class_metadata_as)
+                        )
     
     # to ensure tensorboard is launched whenever and wherever passed 
     if not args.lauch_tensorboard:
