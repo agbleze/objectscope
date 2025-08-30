@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.2 (2025-08-30)
+
+### Fix
+
+* fix: use poetry to manage pip install ([`5e2a6d1`](https://github.com/agbleze/objectscope/commit/5e2a6d1e6d65220b221552425c511918b244be9d))
+
 ## v1.16.1 (2025-08-30)
 
 ### Fix
