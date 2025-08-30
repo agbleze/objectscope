@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v1.16.1 (2025-08-30)
+
+### Fix
+
+* fix: update ci-cd.yml ([`f4a3ed9`](https://github.com/agbleze/objectscope/commit/f4a3ed9d03e601b18353406390262ef1cb6b650c))
+
+* fix: remove unused result from create_trainer ([`068702b`](https://github.com/agbleze/objectscope/commit/068702b81e2e814487343bc00d59f0d8951e812f))
+
+* fix: remove repo after publishing to testpypi as fix for poetry install ([`3ba794b`](https://github.com/agbleze/objectscope/commit/3ba794b15b49d528b6a16a66f112394c85f26de4))
+
+### Style
+
+* style: remove comment ([`37910c2`](https://github.com/agbleze/objectscope/commit/37910c2db941e5a57745c75da79f19c0bed13da2))
+
 ## v1.16.0 (2025-08-30)
 
 ### Feature
