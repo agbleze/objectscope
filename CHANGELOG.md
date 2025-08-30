@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.16.7 (2025-08-30)
+
+### Fix
+
+* fix: remove clearing of repo ([`96a66c8`](https://github.com/agbleze/objectscope/commit/96a66c880db927882e11c7c9f21e8383a03ad79d))
+
 ## v1.16.6 (2025-08-30)
 
 ### Fix
