@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v1.16.0 (2025-08-30)
+
+### Feature
+
+* feat: add save_class_metadata ([`20e0e18`](https://github.com/agbleze/objectscope/commit/20e0e188cabc84f6f662a5ea744038a4a5ffd7c7))
+
+* feat: add save_class_metadata_as ([`56668fd`](https://github.com/agbleze/objectscope/commit/56668fdda856ff349900fa0ae080c65d5a78141f))
+
+### Fix
+
+* fix: update creating class_metadata_map and dumping it ([`4f62afb`](https://github.com/agbleze/objectscope/commit/4f62afb05ccc1243bb72580a3999da488e7f2d66))
+
+### Unknown
+
+* chores: add tests for save_class_metadata ([`8dc54c1`](https://github.com/agbleze/objectscope/commit/8dc54c19cf46ef612341761409632878de280426))
+
+* chores: add tests for anchor miner ([`c16968a`](https://github.com/agbleze/objectscope/commit/c16968ad39f80b1c8ac6d15695cb8b6bd81952df))
+
 ## v1.15.0 (2025-08-30)
 
 ### Feature
