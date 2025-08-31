@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v1.16.9 (2025-08-31)
+
+### Documentation
+
+* docs: update readme ([`06b5b8f`](https://github.com/agbleze/objectscope/commit/06b5b8f2302ce0317f7002e9597179acba906740))
+
+* docs: update readme ([`3059864`](https://github.com/agbleze/objectscope/commit/30598640164247271135695727d21c639744d2a7))
+
+### Fix
+
+* fix: change unlegible readme ([`36b1c8f`](https://github.com/agbleze/objectscope/commit/36b1c8f1ee168b7f9d3a58c53564cc819d515fa9))
+
 ## v1.16.8 (2025-08-30)
 
 ### Fix
