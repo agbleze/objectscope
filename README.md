@@ -4,12 +4,11 @@
 ![GitHub Release](https://img.shields.io/github/v/release/agbleze/objectscope)
 ![GitHub License](https://img.shields.io/github/license/agbleze/objectscope)
 
-ObjectScope extends Detectron2 with utilities and abstractions that simplifies and customizes model training and evaluation to the needs of your data and most dominant workflows. Several intermediate steps such as registering dataset, finetune anchor boxes, model optimization and quantization are provided out-of-box with a single command.
-
+ObjectScope is an extension of Detectron2 that streamlines model training and evaluation by adapting to the structure of your data and the workflows you rely on most. It offers high-level abstractions and utilities that automate key steps—such as dataset registration, anchor box refinement, model optimization, and quantization— out of the box all accessible through a single command. 
 
 ## Installation
 
-To install and run objectscope successfully, you need to have Detectron2 installed. Incase you are using a gpu enabled device, then install objectscope with pytorch cuda version.
+To install and run objectscope successfully, you need to have Detectron2 installed. Incase you are using a gpu enabled device, then install objectscope with the appropriate CUDA version of PyTorch.
 
 ##### Install Detectron2 
 
@@ -17,7 +16,7 @@ To install and run objectscope successfully, you need to have Detectron2 install
 pip install git+https://github.com/facebookresearch/detectron2.git
 ```
 
-##### Install objectscope with cuda version of pytorch
+##### Install objectscope with CUDA-enabled Pytorch
 
 ```bash
 pip install objectscope --index-url https://pypi.org/simple --extra-index-url https://download.pytorch.org/whl/cu118
@@ -26,11 +25,9 @@ pip install objectscope --index-url https://pypi.org/simple --extra-index-url ht
 
 ## Usage
 
-Objectscope can run from both terminal / commandline and python file or jupyter notebook.
+Objectscope can run from the terminal, Python script or Jupyter notebook.
 
-### Train model in python file / Jupyternote book
-
-To train a model, provide the arguments to initialize TrainSession class and call run method to start the model training. This is highlighted as follows:
+### Train model in python file / Jupyter notebook
 
 ```python
 from objectscope.trainer import TrainSession
@@ -56,11 +53,17 @@ trainer = TrainSession(train_img_dir="TRAIN_IMG_DIR",
     trainer.run()
 ```
 
-### Train model using terminal command
+### Train model using Terminal command
 
-With a single command from the terminal, you can do alot more in addition to training the model including model optimization and export to onnx, model evaluation, visualizing model hyperparameters on tensorboard among others.
+ObjectScope supports training, evaluation, optimization, ONNX export, and TensorBoard visualization—all from a single CLI command.
 
-objectscope accepts both declaring the parameters to pass to the terminal command in an .env file, environment variable and passing it as commandline argument. When both are present for the same argument, parameters passed using the commandline are prioritized over others.
+You can pass parameters via:
+
+- Command-line arguments
+- Environment variables
+- A .env file
+
+Command-line arguments take precedence when duplicates exist.
 
 Example of training model from the terminal is as follows:
 
@@ -76,7 +79,7 @@ objectscope --train_img_dir "train"\
             --show_tensorboard --optimize_model
 ```
 
-Example of declaring variables in the .env file to be accessible to objectscope is depicted as follows:
+#### Example .env file
 
 ```.env
 TRAIN_IMG_DIR="train_images"\
@@ -96,7 +99,6 @@ BASE_LR=0.00005
 SHOW_TENSORBOARD=true
 OPTIMIZE_MODEL=true
 ```
-
 
 ## Contributing
 
