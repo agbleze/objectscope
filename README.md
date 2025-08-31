@@ -58,7 +58,7 @@ trainer = TrainSession(train_img_dir="TRAIN_IMG_DIR",
 
 ### Train model using terminal command
 
-With a single command from the terminal, you can do alot more in addition to training the model including model optimization, tensorflow visualization, model evaluation, visualizing model hyperparameters on tensorboard among others.
+With a single command from the terminal, you can do alot more in addition to training the model including model optimization and export to onnx, model evaluation, visualizing model hyperparameters on tensorboard among others.
 
 objectscope accepts both declaring the parameters to pass to the terminal command in an .env file, environment variable and passing it as commandline argument. When both are present for the same argument, parameters passed using the commandline are prioritized over others.
 
